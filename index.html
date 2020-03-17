@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="Cache-control" content="public" />
+		<meta
+			name="viewport"
+			content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+		/>
+		<meta name="description" content="A minimal game built using SVG." />
+		<meta name="keywords" content="minimal game, html5 game, svg game" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+		<meta name="apple-mobile-web-app-title" content="Looptap" />
+		<meta name="application-name" content="Looptap" />
+		<meta name="theme-color" content="#FFFFFF" />
+		<meta property="og:url" content="https://looptap.vasanthv.com" />
+		<meta property="og:image" content="https://looptap.vasanthv.com/apple-touch-icon.png" />
+		<meta property="og:title" content="Looptap" />
+		<meta property="og:description" content="A minimal game built using SVG." />
+		<!-- Global site tag (gtag.js) - Google Analytics -->
+		<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19124340-30"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag('js', new Date());
+
+			gtag('config', 'UA-19124340-30');
+		</script> -->
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+		<link rel="icon" type="image/png" href="/favicon.png" />
+		<title>Looptap - A minimal game built using SVG</title>
+		<!-- <link href="https://fonts.googleapis.com/css?family=Baloo&display=swap" rel="stylesheet" />
+		<link href="/style.css" rel="stylesheet" />
+		<script defer src="/vue.min.js"></script>
+		<script defer src="/script.js"></script> -->
+		<style>
+			html,
+			body {
+				overscroll-behavior: none;
+			}
+			body {
+				margin: 0;
+				line-height: 1.5;
+				-webkit-font-smoothing: antialiased;
+				-moz-osx-font-smoothing: grayscale;
+				-webkit-text-size-adjust: 100%;
+				background: #fbf9f6;
+			}
+			#canvas {
+				display: flex;
+				height: 100vh;
+				width: 100%;
+				max-width: 640px;
+				overflow: hidden;
+				box-sizing: border-box;
+				margin: auto;
+			}
+			#canvas svg {
+				width: 100%;
+			}
+			#ball {
+				animation: rot 60s infinite linear;
+			}
+
+			@keyframes rot {
+				from {
+					transform: rotate(0deg) translate(40%) rotate(0deg);
+				}
+				to {
+					transform: rotate(360deg) translate(40%) rotate(-360deg);
+				}
+			}
+		</style>
+	</head>
+
+	<body>
+		<section id="canvas">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+				<circle id="background" cx="50" cy="50" r="4" fill="#ecf0f1" />
+				<path
+					id="arc"
+					fill="none"
+					stroke="#2ecc71"
+					stroke-width="10"
+					stroke-linejoin="round"
+					stroke-linecap="round"
+				/>
+				<circle id="ball" cx="50" cy="50" r="4" fill="#2C3D51" />
+			</svg>
+		</section>
+		<script type="text/javascript">
+			function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+				var angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180.0;
+
+				return {
+					x: centerX + radius * Math.cos(angleInRadians),
+					y: centerY + radius * Math.sin(angleInRadians)
+				};
+			}
+
+			function describeArc(x, y, radius, startAngle, endAngle) {
+				var start = polarToCartesian(x, y, radius, endAngle);
+				var end = polarToCartesian(x, y, radius, startAngle);
+
+				var largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1';
+
+				var d = ['M', start.x, start.y, 'A', radius, radius, 0, largeArcFlag, 0, end.x, end.y].join(
+					' '
+				);
+
+				return d;
+			}
+
+			const getBallAngle = () => {
+				var el = document.getElementById('ball');
+				var st = window.getComputedStyle(el, null);
+				var tr =
+					st.getPropertyValue('-webkit-transform') ||
+					st.getPropertyValue('-moz-transform') ||
+					st.getPropertyValue('-ms-transform') ||
+					st.getPropertyValue('-o-transform') ||
+					st.getPropertyValue('transform') ||
+					'fail...';
+
+				// With rotate(30deg)...
+				// matrix(0.866025, 0.5, -0.5, 0.866025, 0px, 0px)
+				console.log('Matrix: ' + tr);
+
+				// rotation matrix - http://en.wikipedia.org/wiki/Rotation_matrix
+
+				var values = tr.split('(')[1];
+				values = values.split(')')[0];
+				values = values.split(',');
+				var a = values[0];
+				var b = values[1];
+				var c = values[2];
+				var d = values[3];
+
+				var angle = Math.round(Math.asin(b) * (180 / Math.PI));
+				console.log(angle);
+			};
+
+			function angle(cx, cy, ex, ey) {
+				var dy = ey - cy;
+				var dx = ex - cx;
+				var theta = Math.atan2(-dy, dx); // range (-PI, PI]
+				theta *= 180 / Math.PI; // rads to degs, range (-180, 180]
+				// theta -= 270;
+				if (theta < 0) theta = theta + 360; // range [0, 360)
+				return theta;
+			}
+
+			const getXY = () => {
+				// var rect = document.getElementById('ball').getBoundingClientRect();
+				// console.log(rect.left, rect.top);
+
+				var bbox = document.getElementById('background').getBoundingClientRect();
+				const loopCenter = {
+					x: bbox.left + bbox.width / 2,
+					y: bbox.top + bbox.height / 2
+				};
+
+				var ball = document.getElementById('ball').getBoundingClientRect();
+				const ballCenter = {
+					x: ball.left + ball.width / 2,
+					y: ball.top + ball.height / 2
+				};
+				// console.log(loopCenter, ballCenter);
+
+				// var angleRadians = Math.atan2(loopCenter.y - ballCenter.y, loopCenter.x - ballCenter.x);
+
+				// // angle in degrees
+				// var angleDeg =
+				// 	(Math.atan2(loopCenter.y - ballCenter.y, loopCenter.x - ballCenter.x) * 180) / Math.PI;
+				console.log(angle(loopCenter.x, loopCenter.y, ballCenter.x, ballCenter.y));
+			};
+			window.onload = function() {
+				document.getElementById('arc').setAttribute('d', describeArc(50, 50, 40, 0, 90));
+			};
+
+			// setInterval(getXY, 100);
+			const step = e => {
+				// getBallAngle();
+				// window.requestAnimationFrame(step);
+			};
+			window.requestAnimationFrame(step);
+		</script>
+	</body>
+</html>
