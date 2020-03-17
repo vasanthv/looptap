@@ -69,10 +69,16 @@
 		<section id="canvas">
 			<svg id="looptap" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
 				<rect id="bg" x="0" cy="0" height="100" width="100" fill="none" />
-				<text x="50" y="50" dominant-baseline="middle" text-anchor="middle" id="score"></text>
-				<text x="50" y="70" text-anchor="middle" id="finalscore">
-					Score: 54
-				</text>
+				<text
+					x="50"
+					y="50"
+					dominant-baseline="middle"
+					text-anchor="middle"
+					class="score"
+					id="score"
+				></text>
+				<text x="50" y="65" text-anchor="middle" class="score" id="finalscore"></text>
+				<text x="50" y="80" text-anchor="middle" class="score" id="highscore">Hello</text>
 				<path
 					id="arc"
 					fill="none"
@@ -99,14 +105,16 @@
 					#play {
 						cursor: pointer;
 					}
-					#score,
-					#finalscore {
+					.score {
 						font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Ubuntu,
 							'Helvetica Neue', sans-serif;
 					}
 					#finalscore {
 						font-size: 60%;
-						font-style: italic;
+						display: none;
+					}
+					#highscore {
+						font-size: 50%;
 						display: none;
 					}
 
@@ -125,6 +133,36 @@
 		<script type="text/javascript">
 			let arc = [];
 			let score = 0;
+			const colors = [
+				'#ED5565',
+				'#D9444F',
+				'#ED5F56',
+				'#DA4C43',
+				'#F87D52',
+				'#E7663F',
+				'#FAB153',
+				'#F59B43',
+				'#FDCE55',
+				'#F6BA43',
+				'#C2D568',
+				'#B1C353',
+				'#99D469',
+				'#83C251',
+				'#42CB70',
+				'#3CB85D',
+				'#47CEC0',
+				'#3BBEB0',
+				'#4FC2E7',
+				'#3CB2D9',
+				'#5C9DED',
+				'#4C8CDC',
+				'#9398EC',
+				'#7277D5',
+				'#CC93EF',
+				'#B377D9',
+				'#ED87BF',
+				'#D870AE'
+			];
 
 			function is_touch_device() {
 				return 'ontouchstart' in window;
@@ -174,14 +212,20 @@
 				document.getElementById('ball').style.animationPlayState = 'running';
 				document.getElementById('ball').style.animationDuration = 2500 + 'ms';
 				document.getElementById('finalscore').style.display = 'none';
+				document.getElementById('highscore').style.display = 'none';
 			}
 			function stopPlay() {
 				document.getElementById('play').style.display = 'block';
 				document.getElementById('ball').style.animationPlayState = 'paused';
 				document.getElementById('score').style.display = 'none';
+				if (score > window.localStorage.highScore) window.localStorage.highScore = score;
 				if (score) {
-					document.getElementById('finalscore').textContent = 'Score: ' + score;
+					document.getElementById('finalscore').textContent = score;
 					document.getElementById('finalscore').style.display = 'block';
+				}
+				if (window.localStorage.highScore) {
+					document.getElementById('highscore').textContent = '👑 ' + window.localStorage.highScore;
+					document.getElementById('highscore').style.display = 'block';
 				}
 			}
 
@@ -192,6 +236,7 @@
 				arc.push(random(arc[0] + 10, arc[0] + 110));
 				arc[1] = arc[1] > 360 ? 360 : arc[1];
 				document.getElementById('arc').setAttribute('d', describeArc(50, 50, 40, arc[0], arc[1]));
+				document.getElementById('arc').style.stroke = colors[Math.floor(score / 10)];
 			}
 
 			function tap(e) {
@@ -212,6 +257,7 @@
 			}
 			document.getElementById('play').onclick = startPlay;
 			setArc();
+			if (!window.localStorage.highScore) window.localStorage.highScore = 0;
 		</script>
 	</body>
 </html>
