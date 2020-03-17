@@ -62,25 +62,17 @@
 			#canvas svg {
 				width: 100%;
 			}
-			#ball {
-				animation: rot 60s infinite linear;
-			}
-
-			@keyframes rot {
-				from {
-					transform: rotate(0deg) translate(40%) rotate(0deg);
-				}
-				to {
-					transform: rotate(360deg) translate(40%) rotate(-360deg);
-				}
-			}
 		</style>
 	</head>
 
 	<body>
 		<section id="canvas">
-			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-				<circle id="background" cx="50" cy="50" r="4" fill="#ecf0f1" />
+			<svg id="looptap" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+				<rect id="bg" x="0" cy="0" height="100" width="100" fill="none" />
+				<text x="50" y="50" dominant-baseline="middle" text-anchor="middle" id="score"></text>
+				<text x="50" y="70" text-anchor="middle" id="finalscore">
+					Score: 54
+				</text>
 				<path
 					id="arc"
 					fill="none"
@@ -90,12 +82,55 @@
 					stroke-linecap="round"
 				/>
 				<circle id="ball" cx="50" cy="50" r="4" fill="#2C3D51" />
+				<polygon
+					id="play"
+					points="45,45 55,50 45,55"
+					fill="#2C3D51"
+					stroke="#2C3D51"
+					stroke-width="5"
+					stroke-linejoin="round"
+					stroke-linecap="round"
+				/>
+				<style>
+					#ball {
+						animation: rot 2500ms infinite linear;
+						animation-play-state: paused;
+					}
+					#play {
+						cursor: pointer;
+					}
+					#score,
+					#finalscore {
+						font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Ubuntu,
+							'Helvetica Neue', sans-serif;
+					}
+					#finalscore {
+						font-size: 60%;
+						font-style: italic;
+						display: none;
+					}
+
+					@keyframes rot {
+						from {
+							transform: rotate(0deg) translate(40%) rotate(0deg);
+						}
+						to {
+							transform: rotate(360deg) translate(40%) rotate(-360deg);
+						}
+					}
+				</style>
+				<script type="text/javascript"></script>
 			</svg>
 		</section>
 		<script type="text/javascript">
-			function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
-				var angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180.0;
+			let arc = [];
+			let score = 0;
 
+			function is_touch_device() {
+				return 'ontouchstart' in window;
+			}
+			function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+				const angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180.0;
 				return {
 					x: centerX + radius * Math.cos(angleInRadians),
 					y: centerY + radius * Math.sin(angleInRadians)
@@ -103,91 +138,80 @@
 			}
 
 			function describeArc(x, y, radius, startAngle, endAngle) {
-				var start = polarToCartesian(x, y, radius, endAngle);
-				var end = polarToCartesian(x, y, radius, startAngle);
-
-				var largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1';
-
-				var d = ['M', start.x, start.y, 'A', radius, radius, 0, largeArcFlag, 0, end.x, end.y].join(
+				const start = polarToCartesian(x, y, radius, endAngle);
+				const end = polarToCartesian(x, y, radius, startAngle);
+				const arcFlag = endAngle - startAngle <= 180 ? '0' : '1';
+				const d = ['M', start.x, start.y, 'A', radius, radius, 0, arcFlag, 0, end.x, end.y].join(
 					' '
 				);
-
 				return d;
 			}
 
-			const getBallAngle = () => {
-				var el = document.getElementById('ball');
-				var st = window.getComputedStyle(el, null);
-				var tr =
-					st.getPropertyValue('-webkit-transform') ||
-					st.getPropertyValue('-moz-transform') ||
-					st.getPropertyValue('-ms-transform') ||
-					st.getPropertyValue('-o-transform') ||
-					st.getPropertyValue('transform') ||
-					'fail...';
-
-				// With rotate(30deg)...
-				// matrix(0.866025, 0.5, -0.5, 0.866025, 0px, 0px)
-				console.log('Matrix: ' + tr);
-
-				// rotation matrix - http://en.wikipedia.org/wiki/Rotation_matrix
-
-				var values = tr.split('(')[1];
-				values = values.split(')')[0];
-				values = values.split(',');
-				var a = values[0];
-				var b = values[1];
-				var c = values[2];
-				var d = values[3];
-
-				var angle = Math.round(Math.asin(b) * (180 / Math.PI));
-				console.log(angle);
-			};
-
 			function angle(cx, cy, ex, ey) {
-				var dy = ey - cy;
-				var dx = ex - cx;
-				var theta = Math.atan2(-dy, dx); // range (-PI, PI]
-				theta *= 180 / Math.PI; // rads to degs, range (-180, 180]
-				// theta -= 270;
-				if (theta < 0) theta = theta + 360; // range [0, 360)
+				const dy = ey - cy;
+				const dx = ex - cx;
+				let theta = Math.atan2(dx, -dy);
+				theta *= 180 / Math.PI;
+				theta = theta < 0 ? theta + 360 : theta;
 				return theta;
 			}
 
-			const getXY = () => {
-				// var rect = document.getElementById('ball').getBoundingClientRect();
-				// console.log(rect.left, rect.top);
+			function getBallAngle() {
+				const bg = document.getElementById('bg').getBoundingClientRect();
+				const bgCenter = { x: bg.left + bg.width / 2, y: bg.top + bg.height / 2 };
+				const ball = document.getElementById('ball').getBoundingClientRect();
+				const ballCenter = { x: ball.left + ball.width / 2, y: ball.top + ball.height / 2 };
+				return angle(bgCenter.x, bgCenter.y, ballCenter.x, ballCenter.y);
+			}
 
-				var bbox = document.getElementById('background').getBoundingClientRect();
-				const loopCenter = {
-					x: bbox.left + bbox.width / 2,
-					y: bbox.top + bbox.height / 2
-				};
+			function startPlay() {
+				score = 0;
+				setArc();
 
-				var ball = document.getElementById('ball').getBoundingClientRect();
-				const ballCenter = {
-					x: ball.left + ball.width / 2,
-					y: ball.top + ball.height / 2
-				};
-				// console.log(loopCenter, ballCenter);
+				document.getElementById('play').style.display = 'none';
+				document.getElementById('score').textContent = '0';
+				document.getElementById('score').style.display = 'block';
+				document.getElementById('ball').style.animationPlayState = 'running';
+				document.getElementById('ball').style.animationDuration = 2500 + 'ms';
+				document.getElementById('finalscore').style.display = 'none';
+			}
+			function stopPlay() {
+				document.getElementById('play').style.display = 'block';
+				document.getElementById('ball').style.animationPlayState = 'paused';
+				document.getElementById('score').style.display = 'none';
+				if (score) {
+					document.getElementById('finalscore').textContent = 'Score: ' + score;
+					document.getElementById('finalscore').style.display = 'block';
+				}
+			}
 
-				// var angleRadians = Math.atan2(loopCenter.y - ballCenter.y, loopCenter.x - ballCenter.x);
+			function setArc() {
+				const random = (i, j) => Math.floor(Math.random() * (j - i)) + i;
+				arc = [];
+				arc.push(random(0, 300));
+				arc.push(random(arc[0] + 10, arc[0] + 110));
+				arc[1] = arc[1] > 360 ? 360 : arc[1];
+				document.getElementById('arc').setAttribute('d', describeArc(50, 50, 40, arc[0], arc[1]));
+			}
 
-				// // angle in degrees
-				// var angleDeg =
-				// 	(Math.atan2(loopCenter.y - ballCenter.y, loopCenter.x - ballCenter.x) * 180) / Math.PI;
-				console.log(angle(loopCenter.x, loopCenter.y, ballCenter.x, ballCenter.y));
-			};
-			window.onload = function() {
-				document.getElementById('arc').setAttribute('d', describeArc(50, 50, 40, 0, 90));
-			};
-
-			// setInterval(getXY, 100);
-			const step = e => {
-				// getBallAngle();
-				// window.requestAnimationFrame(step);
-			};
-			window.requestAnimationFrame(step);
+			function tap(e) {
+				e.preventDefault();
+				const ballAngle = getBallAngle();
+				if (ballAngle + 5 > arc[0] && ballAngle - 5 < arc[1]) {
+					setArc();
+					document.getElementById('score').textContent = ++score;
+					document.getElementById('ball').style.animationDuration = 2500 - score * 10 + 'ms';
+				} else {
+					stopPlay();
+				}
+			}
+			if (is_touch_device()) {
+				document.getElementById('looptap').addEventListener('touchstart', tap);
+			} else {
+				document.getElementById('looptap').addEventListener('mousedown', tap);
+			}
+			document.getElementById('play').onclick = startPlay;
+			setArc();
 		</script>
 	</body>
 </html>
