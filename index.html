@@ -309,9 +309,9 @@
 
 				// Add the event listnerers for tap sensing
 				if (is_touch_device()) {
-					document.getElementById('looptap').addEventListener('touchstart', tap);
+					window.addEventListener('touchstart', tap);
 				} else {
-					document.getElementById('looptap').addEventListener('mousedown', tap);
+					window.addEventListener('mousedown', tap);
 				}
 			}
 			function stopPlay() {
