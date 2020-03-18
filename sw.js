@@ -2,7 +2,7 @@
  * Looptap Service worker
  */
 
-const version = '1.0.6';
+const version = '1.0.7';
 const currentCacheName = 'looptap-v' + version;
 
 self.addEventListener('install', function(e) {
