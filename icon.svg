@@ -1,5 +1,5 @@
 <svg id="looptap" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-	<path id="arc" fill="none" stroke="#2ecc71" stroke-width="20" stroke-linejoin="round" stroke-linecap="round" d="M 15.35898384862245 70 A 40 40 0 1 0 50 10" style="stroke: rgb(237, 85, 101);" />
-	<circle cx="10" cy="50" r="8" fill="#2C3D51" />
+	<path id="arc" fill="none" stroke="#2ecc71" stroke-width="20" stroke-linejoin="round" stroke-linecap="round" d="M 15.358983848622458 29.999999999999996 A 40 40 0 1 0 50 10" style="stroke: rgb(237, 85, 101);" />
+	<circle cx="30" cy="15" r="8" fill="#2C3D51" />
 	<polygon id="play" points="45,45 55,50 45,55" fill="#2C3D51" stroke="#2C3D51" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" />
 </svg>
