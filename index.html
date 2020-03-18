@@ -81,9 +81,6 @@
 				font-weight: 500;
 				font-style: italic;
 			}
-			#modal {
-				display: none;
-			}
 			#ball {
 				animation: rot 2000ms infinite linear;
 				animation-play-state: paused;
@@ -138,7 +135,7 @@
 				<text x="50" y="70" text-anchor="middle" class="score" id="best"></text>
 				<g id="tip">
 					<text x="50" y="68" text-anchor="middle" class="tip">
-						Tap the loop when the ball
+						Tap anywhere when the ball
 					</text>
 					<text x="50" y="74" text-anchor="middle" class="tip">is on the colored area.</text>
 				</g>
@@ -180,7 +177,6 @@
 				<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 			</div>
 		</section>
-		<section id="modal"></section>
 		<script type="text/javascript">
 			let arc = [];
 			let score = 0;
@@ -303,6 +299,7 @@
 			}
 			function hideTip() {
 				document.getElementById('tip').style.display = 'none';
+				document.getElementById('about').style.display = 'none';
 			}
 
 			function startPlay() {
