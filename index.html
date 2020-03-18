@@ -313,9 +313,9 @@
 					window.addEventListener('touchstart', tap);
 				} else {
 					window.addEventListener('mousedown', tap);
-					document.body.addEventListener('keydown', e => {
+					window.onkeypress = e => {
 						if (e.keyCode == 32) tap(e);
-					});
+					};
 				}
 			}
 			function stopPlay() {
