@@ -33,10 +33,6 @@
 		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 		<link rel="icon" type="image/png" href="/favicon.png" />
 		<title>Looptap - A minimal game built using SVG</title>
-		<!-- <link href="https://fonts.googleapis.com/css?family=Baloo&display=swap" rel="stylesheet" />
-		<link href="/style.css" rel="stylesheet" />
-		<script defer src="/vue.min.js"></script>
-		<script defer src="/script.js"></script> -->
 		<style>
 			html,
 			body {
@@ -62,6 +58,33 @@
 			#canvas svg {
 				width: 100%;
 			}
+
+			#ball {
+				animation: rot 2500ms infinite linear;
+				animation-play-state: paused;
+			}
+			#play {
+				cursor: pointer;
+			}
+			.score {
+				font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Ubuntu,
+					'Helvetica Neue', sans-serif;
+				display: none;
+			}
+			#finalscore,
+			#highscore {
+				font-size: 50%;
+				display: none;
+			}
+
+			@keyframes rot {
+				from {
+					transform: rotate(0deg) translate(40%) rotate(0deg);
+				}
+				to {
+					transform: rotate(360deg) translate(40%) rotate(-360deg);
+				}
+			}
 		</style>
 	</head>
 
@@ -77,8 +100,8 @@
 					class="score"
 					id="score"
 				></text>
-				<text x="50" y="65" text-anchor="middle" class="score" id="finalscore"></text>
-				<text x="50" y="80" text-anchor="middle" class="score" id="highscore">Hello</text>
+				<text x="50" y="70" text-anchor="middle" class="score" id="finalscore"></text>
+				<text x="50" y="32" text-anchor="middle" class="score" id="highscore"></text>
 				<path
 					id="arc"
 					fill="none"
@@ -97,37 +120,6 @@
 					stroke-linejoin="round"
 					stroke-linecap="round"
 				/>
-				<style>
-					#ball {
-						animation: rot 2500ms infinite linear;
-						animation-play-state: paused;
-					}
-					#play {
-						cursor: pointer;
-					}
-					.score {
-						font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Ubuntu,
-							'Helvetica Neue', sans-serif;
-					}
-					#finalscore {
-						font-size: 60%;
-						display: none;
-					}
-					#highscore {
-						font-size: 50%;
-						display: none;
-					}
-
-					@keyframes rot {
-						from {
-							transform: rotate(0deg) translate(40%) rotate(0deg);
-						}
-						to {
-							transform: rotate(360deg) translate(40%) rotate(-360deg);
-						}
-					}
-				</style>
-				<script type="text/javascript"></script>
 			</svg>
 		</section>
 		<script type="text/javascript">
@@ -163,10 +155,14 @@
 				'#ED87BF',
 				'#D870AE'
 			];
+			let state = 'init';
 
 			function is_touch_device() {
 				return 'ontouchstart' in window;
 			}
+
+			const compose = (...fs) => x => fs.reduce((acc, f) => f(acc), x);
+
 			function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
 				const angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180.0;
 				return {
@@ -202,33 +198,6 @@
 				return angle(bgCenter.x, bgCenter.y, ballCenter.x, ballCenter.y);
 			}
 
-			function startPlay() {
-				score = 0;
-				setArc();
-
-				document.getElementById('play').style.display = 'none';
-				document.getElementById('score').textContent = '0';
-				document.getElementById('score').style.display = 'block';
-				document.getElementById('ball').style.animationPlayState = 'running';
-				document.getElementById('ball').style.animationDuration = 2500 + 'ms';
-				document.getElementById('finalscore').style.display = 'none';
-				document.getElementById('highscore').style.display = 'none';
-			}
-			function stopPlay() {
-				document.getElementById('play').style.display = 'block';
-				document.getElementById('ball').style.animationPlayState = 'paused';
-				document.getElementById('score').style.display = 'none';
-				if (score > window.localStorage.highScore) window.localStorage.highScore = score;
-				if (score) {
-					document.getElementById('finalscore').textContent = score;
-					document.getElementById('finalscore').style.display = 'block';
-				}
-				if (window.localStorage.highScore) {
-					document.getElementById('highscore').textContent = '👑 ' + window.localStorage.highScore;
-					document.getElementById('highscore').style.display = 'block';
-				}
-			}
-
 			function setArc() {
 				const random = (i, j) => Math.floor(Math.random() * (j - i)) + i;
 				arc = [];
@@ -239,24 +208,74 @@
 				document.getElementById('arc').style.stroke = colors[Math.floor(score / 10)];
 			}
 
+			function playBtn() {
+				document.getElementById('play').style.display = state == 'started' ? 'none' : 'block';
+			}
+
+			function scoreField() {
+				const scoreEle = document.getElementById('score');
+
+				scoreEle.textContent = score;
+				scoreEle.style.display = state == 'started' ? 'block' : 'none';
+			}
+
+			function animateBall() {
+				const ballEle = document.getElementById('ball');
+				if (state == 'started') {
+					ballEle.style.animationPlayState = 'running';
+					ballEle.style.animationDuration = 2500 - score * 10 + 'ms';
+				} else {
+					ballEle.style.animationPlayState = 'paused';
+				}
+			}
+
+			function finalScore() {
+				const finalScoreEle = document.getElementById('finalscore');
+				finalScoreEle.textContent = 'Score: ' + score;
+				finalScoreEle.style.display = state == 'stopped' ? 'block' : 'none';
+			}
+
+			function highScore() {
+				const highScoreEle = document.getElementById('highscore');
+				if (window.localStorage.highScore > 0) {
+					highScoreEle.textContent = '👑 ' + window.localStorage.highScore;
+					highScoreEle.style.display = state == 'started' ? 'none' : 'block';
+				}
+			}
+
+			function startPlay() {
+				state = 'started';
+				score = 0;
+				compose(setArc, playBtn, animateBall, scoreField, finalScore, highScore)();
+
+				// Add the event listnerers for tap sensing
+				if (is_touch_device()) {
+					document.getElementById('looptap').addEventListener('touchstart', tap);
+				} else {
+					document.getElementById('looptap').addEventListener('mousedown', tap);
+				}
+			}
+			function stopPlay() {
+				state = 'stopped';
+				if (score > window.localStorage.highScore) window.localStorage.highScore = score;
+				compose(playBtn, animateBall, scoreField, finalScore, highScore)();
+			}
+
 			function tap(e) {
 				e.preventDefault();
 				const ballAngle = getBallAngle();
+				// adding a 5 for better accuracy as the arc stroke extends beyond the angle.
 				if (ballAngle + 5 > arc[0] && ballAngle - 5 < arc[1]) {
-					setArc();
-					document.getElementById('score').textContent = ++score;
-					document.getElementById('ball').style.animationDuration = 2500 - score * 10 + 'ms';
-				} else {
-					stopPlay();
-				}
+					score++;
+					compose(setArc, animateBall, scoreField)();
+				} else stopPlay();
 			}
-			if (is_touch_device()) {
-				document.getElementById('looptap').addEventListener('touchstart', tap);
-			} else {
-				document.getElementById('looptap').addEventListener('mousedown', tap);
-			}
-			document.getElementById('play').onclick = startPlay;
+			document.getElementById('play').addEventListener('click', startPlay);
+
+			// Set an initial arc just for aesthetics
 			setArc();
+
+			// set highscore localstorage if there is not localstorage variable
 			if (!window.localStorage.highScore) window.localStorage.highScore = 0;
 		</script>
 	</body>
