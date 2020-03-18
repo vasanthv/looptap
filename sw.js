@@ -7,7 +7,7 @@ const currentCacheName = 'looptap-v' + version;
 
 self.addEventListener('install', function(e) {
 	console.log('Install event triggered. New updates available.');
-	const filesToCache = ['/', '/manifest.json'];
+	const filesToCache = ['/', 'favicon.ico', '/manifest.json'];
 
 	// Deleting the previous version of cache
 	e.waitUntil(

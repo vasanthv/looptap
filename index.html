@@ -7,7 +7,7 @@
 			name="viewport"
 			content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
 		/>
-		<meta name="description" content="A minimal game built using SVG." />
+		<meta name="description" content="A minimal game to waste your time." />
 		<meta name="keywords" content="minimal game, html5 game, svg game" />
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="mobile-web-app-capable" content="yes" />
@@ -18,7 +18,7 @@
 		<meta property="og:url" content="https://looptap.vasanthv.com" />
 		<meta property="og:image" content="https://looptap.vasanthv.com/apple-touch-icon.png" />
 		<meta property="og:title" content="Looptap" />
-		<meta property="og:description" content="A minimal game built using SVG." />
+		<meta property="og:description" content="A minimal game to waste your time." />
 		<!-- Global site tag (gtag.js) - Google Analytics -->
 		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-19124340-30"></script>
 		<script>
@@ -37,19 +37,24 @@
 		<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#2c3d51" />
 		<meta name="msapplication-TileColor" content="#ffffff" />
 		<meta name="theme-color" content="#ffffff" />
-		<title>Looptap - A minimal game built using SVG</title>
+		<title>Looptap - A minimal game to waste your time</title>
 		<style>
 			html,
 			body {
 				overscroll-behavior: none;
 			}
 			body {
+				font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Ubuntu,
+					'Helvetica Neue', sans-serif;
 				margin: 0;
 				line-height: 1.5;
 				-webkit-font-smoothing: antialiased;
 				-moz-osx-font-smoothing: grayscale;
 				-webkit-text-size-adjust: 100%;
 				background: #fbf9f6;
+			}
+			a {
+				color: inherit;
 			}
 			#canvas {
 				display: flex;
@@ -59,11 +64,26 @@
 				overflow: hidden;
 				box-sizing: border-box;
 				margin: auto;
+				flex-direction: column;
+				justify-content: center;
 			}
 			#canvas svg {
 				width: 100%;
 			}
-
+			#about {
+				text-align: center;
+				font-size: 1.2rem;
+				line-height: 1.75;
+				padding: 0rem 2rem 1rem;
+				color: #2c3d51;
+			}
+			#about a {
+				font-weight: 500;
+				font-style: italic;
+			}
+			#modal {
+				display: none;
+			}
 			#ball {
 				animation: rot 2000ms infinite linear;
 				animation-play-state: paused;
@@ -72,14 +92,23 @@
 				cursor: pointer;
 			}
 			.score {
-				font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Ubuntu,
-					'Helvetica Neue', sans-serif;
 				display: none;
 			}
 			#finalscore,
 			#best {
-				font-size: 50%;
+				font-size: 70%;
 				display: none;
+				fill: #34495e;
+			}
+			#best {
+				font-style: italic;
+				font-size: 50%;
+			}
+			#tip {
+				font-weight: 300;
+				font-size: 25%;
+				font-style: italic;
+				padding: 0.5rem 2rem 0rem;
 			}
 
 			@keyframes rot {
@@ -105,8 +134,14 @@
 					class="score"
 					id="score"
 				></text>
-				<text x="50" y="70" text-anchor="middle" class="score" id="finalscore"></text>
-				<text x="50" y="32" text-anchor="middle" class="score" id="best"></text>
+				<text x="50" y="32" text-anchor="middle" class="score" id="finalscore"></text>
+				<text x="50" y="70" text-anchor="middle" class="score" id="best"></text>
+				<g id="tip">
+					<text x="50" y="68" text-anchor="middle" class="tip">
+						Tap the loop when the ball
+					</text>
+					<text x="50" y="74" text-anchor="middle" class="tip">is on the colored area.</text>
+				</g>
 				<path
 					id="arc"
 					fill="none"
@@ -126,7 +161,26 @@
 					stroke-linecap="round"
 				/>
 			</svg>
+			<div id="about">
+				Looptap is made by
+				<a href="https://vasanthv.com" target="_blank">Vasanth.V</a><br />
+				and it is based on the iOS game
+				<a href="https://coogyloop.com/" target="_blank">Coogyloop</a>.
+				<br />
+				<a
+					href="https://twitter.com/share?ref_src=twsrc%5Etfw"
+					class="twitter-share-button"
+					data-text="Looptap - a minimal game to waste your time."
+					data-url="https://looptap.vasanthv.com"
+					data-via="vsnthv"
+					data-hashtags="looptap"
+					data-show-count="false"
+					>Tweet</a
+				>
+				<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+			</div>
 		</section>
+		<section id="modal"></section>
 		<script type="text/javascript">
 			let arc = [];
 			let score = 0;
@@ -228,7 +282,7 @@
 				const ballEle = document.getElementById('ball');
 				if (state == 'started') {
 					ballEle.style.animationPlayState = 'running';
-					ballEle.style.animationDuration = 2000 - score * 10 + 'ms';
+					ballEle.style.animationDuration = 2000 - score * 20 + 'ms';
 				} else {
 					ballEle.style.animationPlayState = 'paused';
 				}
@@ -236,22 +290,25 @@
 
 			function finalScore() {
 				const finalScoreEle = document.getElementById('finalscore');
-				finalScoreEle.textContent = 'Score: ' + score;
+				finalScoreEle.textContent = score;
 				finalScoreEle.style.display = state == 'stopped' ? 'block' : 'none';
 			}
 
 			function best() {
 				const bestEle = document.getElementById('best');
 				if (window.localStorage.best > 0) {
-					bestEle.textContent = '👑 ' + window.localStorage.best;
+					bestEle.textContent = 'Best: ' + window.localStorage.best;
 					bestEle.style.display = state == 'started' ? 'none' : 'block';
 				}
+			}
+			function hideTip() {
+				document.getElementById('tip').style.display = 'none';
 			}
 
 			function startPlay() {
 				state = 'started';
 				score = 0;
-				compose(setArc, playBtn, animateBall, scoreField, finalScore, best)();
+				compose(hideTip, setArc, playBtn, animateBall, scoreField, finalScore, best)();
 
 				// Add the event listnerers for tap sensing
 				if (is_touch_device()) {
