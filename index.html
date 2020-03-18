@@ -77,7 +77,7 @@
 				display: none;
 			}
 			#finalscore,
-			#highscore {
+			#best {
 				font-size: 50%;
 				display: none;
 			}
@@ -106,7 +106,7 @@
 					id="score"
 				></text>
 				<text x="50" y="70" text-anchor="middle" class="score" id="finalscore"></text>
-				<text x="50" y="32" text-anchor="middle" class="score" id="highscore"></text>
+				<text x="50" y="32" text-anchor="middle" class="score" id="best"></text>
 				<path
 					id="arc"
 					fill="none"
@@ -240,18 +240,18 @@
 				finalScoreEle.style.display = state == 'stopped' ? 'block' : 'none';
 			}
 
-			function highScore() {
-				const highScoreEle = document.getElementById('highscore');
-				if (window.localStorage.highScore > 0) {
-					highScoreEle.textContent = '👑 ' + window.localStorage.highScore;
-					highScoreEle.style.display = state == 'started' ? 'none' : 'block';
+			function best() {
+				const bestEle = document.getElementById('best');
+				if (window.localStorage.best > 0) {
+					bestEle.textContent = '👑 ' + window.localStorage.best;
+					bestEle.style.display = state == 'started' ? 'none' : 'block';
 				}
 			}
 
 			function startPlay() {
 				state = 'started';
 				score = 0;
-				compose(setArc, playBtn, animateBall, scoreField, finalScore, highScore)();
+				compose(setArc, playBtn, animateBall, scoreField, finalScore, best)();
 
 				// Add the event listnerers for tap sensing
 				if (is_touch_device()) {
@@ -262,8 +262,8 @@
 			}
 			function stopPlay() {
 				state = 'stopped';
-				if (score > window.localStorage.highScore) window.localStorage.highScore = score;
-				compose(playBtn, animateBall, scoreField, finalScore, highScore)();
+				if (score > window.localStorage.best) window.localStorage.best = score;
+				compose(playBtn, animateBall, scoreField, finalScore, best)();
 			}
 
 			function tap(e) {
@@ -280,8 +280,8 @@
 			// Set an initial arc just for aesthetics
 			setArc();
 
-			// set highscore localstorage if there is not localstorage variable
-			if (!window.localStorage.highScore) window.localStorage.highScore = 0;
+			// set best localstorage if there is not localstorage variable
+			if (!window.localStorage.best) window.localStorage.best = 0;
 		</script>
 		<script type="text/javascript">
 			if ('serviceWorker' in navigator) {
