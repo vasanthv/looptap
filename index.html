@@ -278,7 +278,6 @@
 			function animateBall() {
 				const ballEle = document.getElementById('ball');
 				if (state == 'started') {
-					ballEle.style.animationPlayState = 'running';
 					ballEle.style.animationDuration = 2000 - score * 15 + 'ms';
 				} else {
 					ballEle.style.animationPlayState = 'paused';
@@ -307,6 +306,7 @@
 				state = 'started';
 				score = 0;
 				compose(hideTip, setArc, playBtn, animateBall, scoreField, finalScore, best)();
+				document.getElementById('ball').style.animationPlayState = 'running';
 
 				// Add the event listnerers for tap sensing
 				if (is_touch_device()) {
@@ -326,7 +326,7 @@
 				e.stopPropagation();
 				const ballAngle = getBallAngle();
 				// adding a 5 for better accuracy as the arc stroke extends beyond the angle.
-				if (ballAngle + 5 > arc[0] && ballAngle - 5 < arc[1]) {
+				if (ballAngle + 6 > arc[0] && ballAngle - 6 < arc[1]) {
 					score++;
 					compose(setArc, animateBall, scoreField)();
 				} else stopPlay();
