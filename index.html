@@ -65,7 +65,7 @@
 			}
 
 			#ball {
-				animation: rot 2500ms infinite linear;
+				animation: rot 2000ms infinite linear;
 				animation-play-state: paused;
 			}
 			#play {
@@ -228,7 +228,7 @@
 				const ballEle = document.getElementById('ball');
 				if (state == 'started') {
 					ballEle.style.animationPlayState = 'running';
-					ballEle.style.animationDuration = 2500 - score * 10 + 'ms';
+					ballEle.style.animationDuration = 2000 - score * 10 + 'ms';
 				} else {
 					ballEle.style.animationPlayState = 'paused';
 				}
@@ -282,6 +282,11 @@
 
 			// set highscore localstorage if there is not localstorage variable
 			if (!window.localStorage.highScore) window.localStorage.highScore = 0;
+		</script>
+		<script type="text/javascript">
+			if ('serviceWorker' in navigator) {
+				navigator.serviceWorker.register('/sw.js');
+			}
 		</script>
 	</body>
 </html>
