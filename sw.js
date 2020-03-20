@@ -2,12 +2,19 @@
  * Looptap Service worker
  */
 
-const version = '1.0.7';
+const version = '1.1.0';
 const currentCacheName = 'looptap-v' + version;
 
 self.addEventListener('install', function(e) {
 	console.log('Install event triggered. New updates available.');
-	const filesToCache = ['/', 'favicon.ico', '/manifest.json'];
+	const filesToCache = [
+		'/',
+		'/favicon.ico',
+		'/vue.min.js',
+		'/style.css',
+		'/script.js',
+		'/manifest.json'
+	];
 
 	// Deleting the previous version of cache
 	e.waitUntil(

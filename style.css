@@ -1,0 +1,77 @@
+html,
+body {
+	overscroll-behavior: none;
+}
+body {
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu,
+		"Helvetica Neue", sans-serif;
+	margin: 0;
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-text-size-adjust: 100%;
+	background: #fbf9f6;
+}
+a {
+	color: inherit;
+}
+#canvas {
+	display: flex;
+	height: 100vh;
+	width: 100%;
+	max-width: 640px;
+	overflow: hidden;
+	box-sizing: border-box;
+	margin: auto;
+	flex-direction: column;
+	justify-content: center;
+}
+#canvas svg {
+	width: 100%;
+}
+#about {
+	text-align: center;
+	font-size: 1.2rem;
+	line-height: 1.75;
+	padding: 0rem 2rem 1rem;
+	color: #2c3d51;
+}
+#about a {
+	font-weight: 500;
+	font-style: italic;
+}
+#ball {
+	transform: translateZ(0);
+	animation: rot 2000ms infinite linear;
+	animation-play-state: paused;
+}
+#ball.started {
+	animation-play-state: running;
+}
+#play {
+	cursor: pointer;
+}
+#finalscore,
+#best {
+	font-size: 70%;
+	fill: #34495e;
+}
+#best {
+	font-style: italic;
+	font-size: 50%;
+}
+#tip {
+	font-weight: 300;
+	font-size: 22%;
+	font-style: italic;
+	padding: 0.5rem 2rem 0rem;
+}
+
+@keyframes rot {
+	from {
+		transform: rotate(0deg) translate(40%) rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg) translate(40%) rotate(-360deg);
+	}
+}
