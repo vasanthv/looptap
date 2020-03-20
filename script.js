@@ -2,6 +2,7 @@ const loopTapApp = new Vue({
 	el: '#canvas',
 	data: {
 		arc: [180, 270],
+		taps: 0,
 		score: 0,
 		state: 'init',
 		prevTapTime: 0,
@@ -86,6 +87,7 @@ const loopTapApp = new Vue({
 
 		startPlay: function() {
 			this.state = 'started';
+			this.taps = 0;
 			this.score = 0;
 			this.prevTapTime = Date.now();
 		},
@@ -104,9 +106,8 @@ const loopTapApp = new Vue({
 			if (ballAngle + 6 > this.arc[0] && ballAngle - 6 < this.arc[1]) {
 				const currentTapTime = Date.now();
 				const tapInterval = currentTapTime - this.prevTapTime;
-				console.log(tapInterval);
+				this.taps++;
 				this.score = this.score + (tapInterval < 500 ? 10 : tapInterval < 1000 ? 5 : 1);
-				console.log(this.score);
 				this.prevTapTime = currentTapTime;
 				this.setArc();
 			} else this.stopPlay();

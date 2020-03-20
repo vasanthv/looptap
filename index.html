@@ -87,7 +87,7 @@
 				<path
 					id="arc"
 					fill="none"
-					v-bind:stroke="colors[Math.floor(score / 10)] || '#D870AE'"
+					v-bind:stroke="colors[Math.floor(score / 10)] || colors[Math.floor((score - 270) / 10)] || '#bdc3c7'"
 					stroke-width="10"
 					stroke-linejoin="round"
 					stroke-linecap="round"
@@ -100,7 +100,7 @@
 					r="4"
 					fill="#2C3D51"
 					v-bind:class="state"
-					v-bind:style="'animation-duration: '+(2000 - score * 5) + 'ms'"
+					v-bind:style="'animation-duration: '+(2000 - taps * 5) + 'ms'"
 				/>
 				<polygon
 					id="play"
