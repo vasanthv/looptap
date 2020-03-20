@@ -107,7 +107,7 @@ const loopTapApp = new Vue({
 				const currentTapTime = Date.now();
 				const tapInterval = currentTapTime - this.prevTapTime;
 				this.taps++;
-				this.score = this.score + (tapInterval < 500 ? 10 : tapInterval < 1000 ? 5 : 1);
+				this.score = this.score + (tapInterval < 500 ? 5 : tapInterval < 1000 ? 2 : 1);
 				this.prevTapTime = currentTapTime;
 				this.setArc();
 			} else this.stopPlay();
