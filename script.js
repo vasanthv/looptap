@@ -94,7 +94,7 @@ const loopTapApp = new Vue({
 		stopPlay: function() {
 			if (this.state === 'started') {
 				this.state = 'stopped';
-				if (this.score > window.localStorage.best) window.localStorage.best = this.score;
+				if (this.score > window.localStorage.getItem('bestScore')) window.localStorage.setItem('bestScore', this.score);
 			}
 		},
 
@@ -123,6 +123,8 @@ if ('ontouchstart' in window) {
 		if (e.keyCode == 32) loopTapApp.tap(e);
 	};
 }
+
+window.localStorage.setItem('bestScore', 0);
 
 if ('serviceWorker' in navigator) {
 	navigator.serviceWorker.register('/sw.js');
