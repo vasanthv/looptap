@@ -4,6 +4,7 @@ const loopTapApp = new Vue({
 		arc: [180, 270],
 		taps: 0,
 		score: 0,
+		best: window.localStorage.best || 0,
 		state: 'init',
 		prevTapTime: 0,
 		colors: [
@@ -94,7 +95,7 @@ const loopTapApp = new Vue({
 		stopPlay: function() {
 			if (this.state === 'started') {
 				this.state = 'stopped';
-				if (this.score > window.localStorage.best) window.localStorage.best = this.score;
+				if (this.score > this.best) window.localStorage.best = this.best = this.score;
 			}
 		},
 
