@@ -1,6 +1,7 @@
 {
 	"name": "Looptap",
 	"short_name": "Looptap",
+	"description": "A minimal game to waste your time.",
 	"icons": [
 		{
 			"src": "icon.png",
