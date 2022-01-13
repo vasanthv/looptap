@@ -113,6 +113,15 @@
 					v-on:click="startPlay"
 				/>
 			</svg>
+			<a
+				id="shareBtn"
+				v-bind:href="'https://twitter.com/intent/tweet?url=https%3A%2F%2Flooptap.vasanthv.com%2F&via=vsnthv&text=Beat%20my%20score%3A%20'+score+'%0aLooptap%20-%20a%20minimal%20game%20to%20waste%20your%20time.&hashtags=looptap'"
+				v-if="['stopped', 'started'].includes(state)"
+				target="_blank"
+				v-bind:class="state === 'started' ? 'hide' : ''"
+			>
+				Share your score
+			</a>
 			<div id="about" v-if="state === 'init'">
 				Looptap is made by
 				<a href="https://vasanthv.com" target="_blank">Vasanth.V</a><br />

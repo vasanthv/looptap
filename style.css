@@ -65,6 +65,20 @@ a {
 	font-style: italic;
 	padding: 0.5rem 2rem 0rem;
 }
+#shareBtn {
+	background: #1d9bf0;
+	color: #fff;
+	width: 150px;
+	text-align: center;
+	text-decoration: none;
+	border-radius: 2rem;
+	padding: 0.3rem 1.5rem;
+	margin: 1rem auto 0px;
+	font-size: 1.25rem;
+}
+#shareBtn.hide {
+	visibility: hidden;
+}
 
 @keyframes rot {
 	from {
