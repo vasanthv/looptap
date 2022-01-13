@@ -2,27 +2,18 @@
  * Looptap Service worker
  */
 
-const version = '1.1.1';
-const currentCacheName = 'looptap-v' + version;
+const version = "1.1.2";
+const currentCacheName = "looptap-v" + version;
 
-self.addEventListener('install', function(e) {
-	console.log('Install event triggered. New updates available.');
-	const filesToCache = [
-		'/',
-		'/favicon.ico',
-		'/vue.min.js',
-		'/style.css',
-		'/script.js',
-		'/manifest.json'
-	];
+self.addEventListener("install", function(e) {
+	console.log("Install event triggered. New updates available.");
+	const filesToCache = ["/", "/favicon.ico", "/vue.min.js", "/style.css", "/script.js", "/manifest.json"];
 
 	// Deleting the previous version of cache
 	e.waitUntil(
 		caches.keys().then(function(cacheNames) {
 			return Promise.all(
-				cacheNames
-					.filter(cacheName => cacheName != currentCacheName)
-					.map(cacheName => caches.delete(cacheName))
+				cacheNames.filter((cacheName) => cacheName != currentCacheName).map((cacheName) => caches.delete(cacheName))
 			);
 		})
 	);
@@ -35,7 +26,7 @@ self.addEventListener('install', function(e) {
 	);
 });
 
-self.addEventListener('fetch', function(event) {
+self.addEventListener("fetch", function(event) {
 	event.respondWith(
 		caches.match(event.request).then(function(cache) {
 			return cache || fetch(event.request);

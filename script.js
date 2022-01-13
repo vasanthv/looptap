@@ -123,7 +123,13 @@ if ("ontouchstart" in window) {
 } else {
 	window.addEventListener("mousedown", loopTapApp.tap);
 	window.onkeypress = (e) => {
-		if (e.keyCode == 32) loopTapApp.tap(e);
+		if (e.keyCode == 32) {
+			if (loopTapApp.state === "stopped") {
+				loopTapApp.startPlay();
+			} else {
+				loopTapApp.tap(e);
+			}
+		}
 	};
 }
 
