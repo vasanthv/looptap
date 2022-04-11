@@ -91,13 +91,11 @@ const loopTapApp = new Vue({
 			this.taps = 0;
 			this.score = 0;
 			this.prevTapTime = Date.now();
-			if (hoy) hoy.hide();
 		},
 		stopPlay: function() {
 			if (this.state === "started") {
 				this.state = "stopped";
 				if (this.score > this.best) window.localStorage.best = this.best = this.score;
-				if (hoy) hoy.show();
 			}
 		},
 
