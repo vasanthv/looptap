@@ -16,14 +16,14 @@ a {
 }
 #canvas {
 	display: none;
-	height: 100vh;
+	height: 96vh;
 	width: 100%;
 	max-width: 640px;
 	overflow: hidden;
 	box-sizing: border-box;
 	margin: auto;
 	flex-direction: column;
-	justify-content: center;
+	justify-content: space-around;
 }
 #canvas svg {
 	width: 100%;
@@ -75,6 +75,7 @@ a {
 	padding: 0.3rem 1.5rem;
 	margin: 1rem auto 0px;
 	font-size: 1.25rem;
+	display: block;
 }
 #shareBtn.hide {
 	visibility: hidden;
