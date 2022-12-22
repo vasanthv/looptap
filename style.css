@@ -37,7 +37,6 @@ a {
 }
 #about a {
 	font-weight: 500;
-	font-style: italic;
 }
 #ball {
 	transform: translateZ(0);
