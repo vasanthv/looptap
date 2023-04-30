@@ -28,13 +28,13 @@
 		<title>Looptap - A minimal game to waste your time</title>
 
 		<link href="/style.css" rel="stylesheet" />
-		<script defer src="/vue.min.js"></script>
+		<script defer src="/vue.global.prod.js"></script>
 		<script defer src="/script.js"></script>
 		<script async src="https://cdn.volument.com/v1/volument.js" token="fc092e3e31"></script>
 	</head>
 
 	<body>
-		<section id="canvas" v-bind:style="'display:block;'">
+		<section id="canvas">
 			<div id="game" style="height: 80vh; display: flex">
 				<svg id="looptap" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
 					<rect id="bg" x="0" cy="0" height="100" width="100" fill="none" />

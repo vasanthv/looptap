@@ -15,7 +15,6 @@ a {
 	color: inherit;
 }
 #canvas {
-	display: none;
 	height: 96vh;
 	width: 100%;
 	max-width: 640px;
