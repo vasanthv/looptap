@@ -1,4 +1,5 @@
 /* global Vue */
+const BALL_PATH_RADIUS = 40;
 const loopTapApp = Vue.createApp({
   data() {
     return {
@@ -38,11 +39,33 @@ const loopTapApp = Vue.createApp({
         "#ED87BF",
         "#D870AE",
       ],
+      ballAngle: 0, // NEW: angle in degrees
+      animationFrameId: null, // NEW: for rAF
     };
   },
   computed: {
     arcDValue() {
-      return this.describeArc(50, 50, 40, this.arc[0], this.arc[1]);
+      return this.describeArc(
+        50,
+        50,
+        BALL_PATH_RADIUS,
+        this.arc[0],
+        this.arc[1]
+      );
+    },
+    ballCx() {
+      // Ball X position based on angle
+      return (
+        50 +
+        BALL_PATH_RADIUS * Math.cos(((this.ballAngle - 90) * Math.PI) / 180)
+      );
+    },
+    ballCy() {
+      // Ball Y position based on angle
+      return (
+        50 +
+        BALL_PATH_RADIUS * Math.sin(((this.ballAngle - 90) * Math.PI) / 180)
+      );
     },
   },
   methods: {
@@ -84,14 +107,8 @@ const loopTapApp = Vue.createApp({
     },
 
     getBallAngle() {
-      const bg = document.getElementById("bg").getBoundingClientRect();
-      const bgCenter = { x: bg.left + bg.width / 2, y: bg.top + bg.height / 2 };
-      const ball = document.getElementById("ball").getBoundingClientRect();
-      const ballCenter = {
-        x: ball.left + ball.width / 2,
-        y: ball.top + ball.height / 2,
-      };
-      return this.getAngle(bgCenter.x, bgCenter.y, ballCenter.x, ballCenter.y);
+      // Use the current ballAngle instead of DOM
+      return this.ballAngle;
     },
 
     setArc() {
@@ -103,17 +120,36 @@ const loopTapApp = Vue.createApp({
       this.arc = arc;
     },
 
+    animateBall() {
+      if (this.state !== "started") return;
+      // Speed: base duration minus taps*5, as before
+      const speed = Math.max(500, 2000 - this.taps * 5); // ms for full circle
+      const now = performance.now();
+      if (!this._lastFrameTime) this._lastFrameTime = now;
+      const delta = now - this._lastFrameTime;
+      this._lastFrameTime = now;
+      // Advance angle
+      this.ballAngle = (this.ballAngle + (360 * delta) / speed) % 360;
+      this.animationFrameId = requestAnimationFrame(this.animateBall);
+    },
+
     startPlay() {
       this.state = "started";
       this.taps = 0;
       this.score = 0;
       this.prevTapTime = Date.now();
+      this.ballAngle = 0;
+      this._lastFrameTime = null;
+      if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = requestAnimationFrame(this.animateBall);
     },
     stopPlay() {
       if (this.state === "started") {
         this.state = "stopped";
         if (this.score > this.best)
           window.localStorage.best = this.best = this.score;
+        if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
+        this.animationFrameId = null;
       }
     },
 
@@ -147,6 +183,12 @@ const loopTapApp = Vue.createApp({
         alert("Sharing is not supported on this browser.");
       }
     },
+  },
+  mounted() {
+    // Clean up on destroy
+    window.addEventListener("beforeunload", () => {
+      if (this.animationFrameId) cancelAnimationFrame(this.animationFrameId);
+    });
   },
 }).mount("#canvas");
 

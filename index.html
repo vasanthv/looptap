@@ -97,12 +97,11 @@
           />
           <circle
             id="ball"
-            cx="50"
-            cy="50"
+            :cx="ballCx"
+            :cy="ballCy"
             r="4"
             fill="#2C3D51"
             v-bind:class="state"
-            v-bind:style="'animation-duration: '+(2000 - taps * 5) + 'ms'"
           />
           <polygon
             id="play"

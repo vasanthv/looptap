@@ -39,12 +39,8 @@ a {
   font-weight: 500;
 }
 #ball {
-  transform: translateZ(0);
-  animation: rot 2000ms infinite linear;
-  animation-play-state: paused;
 }
 #ball.started {
-  animation-play-state: running;
 }
 #play {
   cursor: pointer;
@@ -80,13 +76,4 @@ a {
 }
 #shareBtn.hide {
   visibility: hidden;
-}
-
-@keyframes rot {
-  from {
-    transform: rotate(0deg) translate(40%) rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg) translate(40%) rotate(-360deg);
-  }
 }
